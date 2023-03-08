@@ -9,6 +9,7 @@ let
     pandas
     numpy
 
+    boost
     pybind11
     cython
   ];
