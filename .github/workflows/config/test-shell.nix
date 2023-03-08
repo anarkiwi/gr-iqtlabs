@@ -28,7 +28,7 @@ mkShell {
     gnuradio.python.pkgs.pybind11
     gnuradio.python.pkgs.pandas
     cmake
-   
+
     libboost-all-dev
     libsndfile
     soapysdr
