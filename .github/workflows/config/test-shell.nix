@@ -29,7 +29,7 @@ mkShell {
     gnuradio.python.pkgs.pandas
     cmake
 
-    libboost-all-dev
+    libboost-all
     libsndfile
     soapysdr
     cppcheck
