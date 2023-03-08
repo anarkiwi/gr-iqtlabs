@@ -206,8 +206,6 @@
 #include <ios>
 #include <iostream>
 #include <sstream>
-#include <boost/filesystem.hpp>
-#include <boost/iostreams/filter/zstd.hpp>
 
 #include <gnuradio/io_signature.h>
 #include "retune_fft_impl.h"
@@ -254,11 +252,48 @@ namespace gr {
               sdir_(sdir),
               write_step_fft_(write_step_fft)
         {
+            outbuf_p.reset(new boost::iostreams::filtering_streambuf<boost::iostreams::output>());
+            out_p.reset(new std::ostream(outbuf_p.get()));
             message_port_register_out(TUNE);
         }
 
         retune_fft_impl::~retune_fft_impl()
         {
+        }
+
+        std::string retune_fft_impl::get_prefix_file_(const std::string &file, const std::string &prefix) {
+            boost::filesystem::path orig_path(file);
+            std::string basename(orig_path.filename().c_str());
+            std::string dirname(boost::filesystem::canonical(orig_path.parent_path()).c_str());
+            return dirname + "/" + prefix + basename;
+        }
+
+        std::string retune_fft_impl::get_dotfile_(const std::string &file) {
+            return get_prefix_file_(file, ".");
+        }
+
+        void retune_fft_impl::write_(const char *data, size_t len) {
+            if (!outbuf_p->empty()) {
+                out_p->write(data, len);
+            }
+        }
+
+        void retune_fft_impl::open_(const std::string &file, size_t zlevel) {
+            close_();
+            file_ = file;
+            dotfile_ = get_dotfile_(file_);
+            orig_path_ = boost::filesystem::path(file_);
+            outfile.open(dotfile_.c_str(), std::ofstream::binary);
+            outbuf_p->push(boost::iostreams::zstd_compressor(boost::iostreams::zstd_params(zlevel)));
+            outbuf_p->push(outfile);
+        }
+
+        void retune_fft_impl::close_() {
+             if (!outbuf_p->empty()) {
+                 outbuf_p->reset();
+                 outfile.close();
+                 rename(dotfile_.c_str(), file_.c_str());
+             }
         }
 
         uint64_t retune_fft_impl::host_now_()
@@ -302,6 +337,7 @@ namespace gr {
                         --skip_fft_count_;
                         continue;
                     }
+                    write_((const char*)in, sizeof(input_type) * nfft_);
                     for (size_t k = 0; k < nfft_; ++k) {
                         double s = *in++;
                         sample_[k] += s;
@@ -383,6 +419,8 @@ namespace gr {
                     --pending_retune_;
                     if (last_rx_freq_ && sample_count_) {
                         const uint64_t host_now = host_now_();
+                        std::string bucket_path = sdir_ + "/fft_" + std::to_string(host_now) + "_" + std::to_string(uint64_t(rx_freq)) + "Hz.zst";
+                        open_(bucket_path, 1);
                         const double bucket_size = samp_rate_ / vlen_;
                         std::stringstream ss("", std::ios_base::app | std::ios_base::out);
                         ss << "{" <<
