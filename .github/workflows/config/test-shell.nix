@@ -9,7 +9,6 @@ let
     pandas
     numpy
 
-    boost
     pybind11
     cython
   ];
@@ -35,4 +34,5 @@ mkShell {
     soapysdr
     cppcheck
   ];
+  LD_LIBRARY_PATH = "${lib.makeLibraryPath [ boost ]}";
 }
