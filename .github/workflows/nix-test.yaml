@@ -18,7 +18,7 @@ jobs:
       run: |
         nix-shell ${GITHUB_WORKSPACE}/.github/workflows/config/test-shell.nix \
         --command "cppcheck --verbose --language=c++ lib/* && \
-        mkdir build && cd build && cmake .. && make && ARGS=--output-on-failure make test && sudo make install && sudo ldconfig && cd .. && \
+        mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig && ARGS=--output-on-failure make test && cd .. && \
         cd test_flow_graphs && mkdir test && cd test && testdir=\$(pwd) && \
         export GRC_BLOCKS_PATH=/var/empty/local/share/gnuradio/grc/blocks/ && \
         for g in ../*grc ; do cd \$testdir && grcc \$g && sed -i 's/output_language: python/output_language: cpp/g' \$g && grcc -o test \$g ; \
