@@ -1,7 +1,7 @@
 with (import (builtins.fetchGit {
   name = "nixpkgs-01-27-2023";
   url = "https://github.com/nixos/nixpkgs/";
-  ref = "refs/branches/NixOS:staging";
+  ref = "refs/branches/staging";
   rev = "e4cc388f86b9e3056092cc58c501b429e2765170";
 }) {} );
 let
