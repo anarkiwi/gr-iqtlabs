@@ -1,4 +1,8 @@
-with (import (builtins.fetchGit {  name = "nixpkgs-03-08-2023";  url = "https://github.com/nixos/nixpkgs/";  ref = "refs/heads/staging";  rev = "96de0eded6d8a6f84197a65ef9f3f883dbc82aca";
+with (import (builtins.fetchGit {
+  name = "nixpkgs-03-08-2023";
+  url = "https://github.com/nixos/nixpkgs/";
+  ref = "refs/heads/staging";
+  rev = "96de0eded6d8a6f84197a65ef9f3f883dbc82aca";
 }) {} );
 let
   test-py-packages = python-packages: with python-packages; [
