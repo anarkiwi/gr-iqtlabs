@@ -326,6 +326,7 @@ void iq_inference_impl::run_inference_() {
         const std::string_view power_body(
             reinterpret_cast<char const *>(output_item.power),
             output_item.sample_count * sizeof(float));
+        d_logger->info("creating inference request");
         if (power_inference_) {
           const std::string samples_power_body =
               std::string(body) + std::string(power_body);
@@ -336,7 +337,9 @@ void iq_inference_impl::run_inference_() {
               model_name, body, "application/octet-stream");
         }
         std::string results;
+        d_logger->info("sending inference request");
         torchserve_client_->send_inference_request(results, error);
+        d_logger->info("parsing inference request");
         // TODO: troubleshoot test flask server hang after one request.
         if (error.size() == 0) {
           try {
@@ -368,6 +371,7 @@ void iq_inference_impl::run_inference_() {
           d_logger->error(error);
           output_json["error"] = error;
         }
+        d_logger->info("completed inference request");
       }
 
       output_json["predictions"] = results_json;
@@ -375,11 +379,13 @@ void iq_inference_impl::run_inference_() {
     // double new line to facilitate json parsing, since prediction may
     // contain new lines.
     if (signal_predictions) {
+      d_logger->info("pushing prediction");
       output_json["metadata"] = metadata_json;
       const std::string output_json_str = output_json.dump();
       json_q_.push(output_json_str + "\n\n");
       message_port_pub(INFERENCE_KEY, string_to_pmt(output_json_str));
       ++predictions_;
+      d_logger->info("pushed prediction");
     }
     delete_output_item_(output_item);
   }
