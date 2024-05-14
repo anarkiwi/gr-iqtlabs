@@ -378,7 +378,6 @@ void iq_inference_impl::run_inference_() {
       output_json["metadata"] = metadata_json;
       const std::string output_json_str = output_json.dump();
       json_q_.push(output_json_str + "\n\n");
-      message_port_pub(INFERENCE_KEY, string_to_pmt(output_json_str));
       ++predictions_;
     }
     delete_output_item_(output_item);
@@ -518,6 +517,7 @@ int iq_inference_impl::general_work(int noutput_items,
     std::string json;
     json_q_.pop(json);
     out_buf_.insert(out_buf_.end(), json.begin(), json.end());
+    message_port_pub(INFERENCE_KEY, string_to_pmt(json));
   }
 
   if (!out_buf_.empty()) {
