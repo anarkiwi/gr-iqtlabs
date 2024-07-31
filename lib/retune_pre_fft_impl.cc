@@ -243,7 +243,7 @@ retune_pre_fft_impl::retune_pre_fft_impl(
   unsigned int alignment = volk_get_alignment();
   total_.reset((float *)volk_malloc(sizeof(float), alignment));
   set_tag_propagation_policy(TPP_DONT);
-  // set_output_multiple(nfft_);
+  set_output_multiple(1024);
 }
 
 retune_pre_fft_impl::~retune_pre_fft_impl() {}
