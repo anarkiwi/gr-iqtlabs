@@ -240,7 +240,7 @@ retune_pre_fft_impl::retune_pre_fft_impl(
                    tuning_ranges, tag_now, low_power_hold_down, slew_rx_time),
       nfft_(nfft), fft_batch_size_(fft_batch_size), tag_(pmt::intern(tag)) {
   message_port_register_out(TUNE_KEY);
-  unsigned int alignment = volk_get_alignment();
+  int alignment = volk_get_alignment();
   total_.reset((float *)volk_malloc(sizeof(float), alignment));
   set_tag_propagation_policy(TPP_DONT);
   set_output_multiple(nfft_);

@@ -259,7 +259,7 @@ retune_fft_impl::retune_fft_impl(
       description_(description), pre_fft_(pre_fft), bucket_range_(bucket_range),
       fft_min_(fft_min), fft_max_(fft_max) {
   bucket_offset_ = round(float((nfft_ - round(bucket_range_ * nfft_)) / 2));
-  unsigned int alignment = volk_get_alignment();
+  int alignment = volk_get_alignment();
   sample_.reset((float *)volk_malloc(sizeof(float) * nfft_, alignment));
   mean_.reset((float *)volk_malloc(sizeof(float) * nfft_, alignment));
   peak_.reset((float *)volk_malloc(sizeof(float) * nfft_, alignment));

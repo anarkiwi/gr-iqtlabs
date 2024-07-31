@@ -245,7 +245,7 @@ iq_inference_impl::iq_inference_impl(
       power_inference_(power_inference), background_(background),
       running_(true), last_rx_time_(0), last_rx_freq_(0) {
   samples_lookback_.reset(new gr_complex[batch_ * sample_buffer]);
-  unsigned int alignment = volk_get_alignment();
+  int alignment = volk_get_alignment();
   samples_total_.reset((float *)volk_malloc(sizeof(float), alignment));
   power_total_.reset((float *)volk_malloc(sizeof(float), alignment));
   parse_models(model_server, model_names);

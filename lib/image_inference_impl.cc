@@ -290,7 +290,7 @@ void image_inference_impl::volk_min_max_mean(const cv::Mat &mat, float &min,
                                              float &max, float &mean) {
   COUNT_T mat_size = mat.rows * mat.cols;
   const float *mat_data = (const float *)mat.data;
-  unsigned int alignment = volk_get_alignment();
+  int alignment = volk_get_alignment();
   boost::scoped_ptr<uint32_t> min_pos, max_pos;
   boost::scoped_ptr<float> total;
   min_pos.reset((uint32_t *)volk_malloc(sizeof(uint32_t), alignment));
