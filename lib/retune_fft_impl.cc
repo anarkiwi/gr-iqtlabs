@@ -465,7 +465,9 @@ void retune_fft_impl::write_buckets_(TIME_T host_now) {
   output_buckets_("buckets", buckets, ss);
   ss << "}" << std::endl;
   const std::string s = ss.str();
+  d_logger->info("pre {}", s.size());
   message_port_pub(JSON_KEY, string_to_pmt(s));
+  d_logger->info("post {}", s.size());
 }
 
 void retune_fft_impl::process_buckets_(FREQ_T rx_freq, TIME_T rx_time) {
