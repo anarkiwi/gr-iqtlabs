@@ -473,7 +473,8 @@ void retune_fft_impl::write_buckets_(TIME_T host_now) {
   out.push(bio::zstd_compressor(bio::zstd_params(bio::zstd::default_compression)));
   out.push(origin);
   bio::copy(out, compressed);
-  message_port_pub(JSON_KEY, string_to_pmt(compressed.str()));
+  d_logger->info("do not send {}", compressed.str().size());
+  // message_port_pub(JSON_KEY, string_to_pmt(compressed.str()));
 }
 
 void retune_fft_impl::process_buckets_(FREQ_T rx_freq, TIME_T rx_time) {
