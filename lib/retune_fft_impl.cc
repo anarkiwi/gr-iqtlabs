@@ -212,6 +212,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <volk/volk.h>
+#include <boost/iostreams/filtering_streambuf.hpp>
 
 namespace gr {
 namespace iqtlabs {
@@ -465,9 +466,14 @@ void retune_fft_impl::write_buckets_(TIME_T host_now) {
   output_buckets_("buckets", buckets, ss);
   ss << "}" << std::endl;
   const std::string s = ss.str();
-  d_logger->info("pre {}", s.size());
-  message_port_pub(JSON_KEY, string_to_pmt(s));
-  d_logger->info("post {}", s.size());
+  namespace bio = boost::iostreams;
+  std::stringstream compressed;
+  std::stringstream origin(s);
+  bio::filtering_streambuf<bio::input> out;
+  out.push(bio::zstd_compressor(bio::zstd_params(bio::zstd::default_compression)));
+  out.push(origin);
+  bio::copy(out, compressed);
+  message_port_pub(JSON_KEY, string_to_pmt(compressed.str()));
 }
 
 void retune_fft_impl::process_buckets_(FREQ_T rx_freq, TIME_T rx_time) {
