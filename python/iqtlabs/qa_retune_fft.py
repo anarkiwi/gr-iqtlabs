@@ -492,7 +492,7 @@ class qa_retune_fft_base:
             first_hz = int(first_hz_match.group(1))
             zst_fft_files = sorted(
                 glob.glob(
-                    os.path.join(tmpdir, f"*/*{first_hz}Hz_{samp_rate}sps.raw.zst")
+                    os.path.join(tmpdir, f"*/*{first_hz}Hz_{samp_rate}sps.sigmf-data.zst")
                 )
             )
             if stare:
