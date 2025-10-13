@@ -431,7 +431,7 @@ void retune_fft_impl::reopen_(TIME_T host_now, FREQ_T rx_freq) {
         secs_dir(sdir_, rotate_secs_) + "fft_" + host_now_str_(host_now) + "_" +
         std::to_string(COUNT_T(nfft_)) + "points_" +
         std::to_string(FREQ_T(rx_freq)) + "Hz_" +
-        std::to_string(COUNT_T(samp_rate_)) + "sps.raw.zst";
+        std::to_string(COUNT_T(samp_rate_)) + "sps.sigmf-data.zst";
     open_(bucket_path);
   }
 }
