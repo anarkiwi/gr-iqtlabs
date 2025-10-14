@@ -334,9 +334,7 @@ class qa_write_freq_samples(gr_unittest.TestCase):
                     self.assertEqual(
                         source_file,
                         os.path.basename(
-                            sigmf_file.replace(".sigmf-data", "").replace(
-                                "sigmf-meta", "zst"
-                            )
+                            sigmf_file.replace("sigmf-meta", "sigmf-data.zst")
                         ),
                         sigmf,
                     )
