@@ -304,7 +304,9 @@ class qa_write_freq_samples(gr_unittest.TestCase):
             else:
                 self.assertEqual(len(zst_files), 1)
             for i, zst_file in enumerate(zst_files):
-                sigmf_file = zst_file.replace("zst", "sigmf-meta")
+                sigmf_file = zst_file.replace(".sigmf-data", "").replace(
+                    "zst", "sigmf-meta"
+                )
                 bin_file = zst_file.replace(".zst", "")
                 self.assertTrue(os.path.exists(sigmf_file), sigmf_file)
                 expected_tune_freq = tune_freq
@@ -331,7 +333,9 @@ class qa_write_freq_samples(gr_unittest.TestCase):
                     source_file = global_sigmf_capture["capture_details:source_file"]
                     self.assertEqual(
                         source_file,
-                        os.path.basename(sigmf_file.replace("sigmf-meta", "zst")),
+                        os.path.basename(
+                            sigmf_file.replace("sigmf-meta", "sigmf-data.zst")
+                        ),
                         sigmf,
                     )
                     self.assertEqual(

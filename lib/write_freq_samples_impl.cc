@@ -329,8 +329,8 @@ void write_freq_samples_impl::close_() {
         secs_dir(sdir_, rotate_secs_) + prefix_ + "_" +
         std::to_string(open_time_) + "_" +
         std::to_string(FREQ_T(last_rx_freq_)) + "Hz_" +
-        std::to_string(COUNT_T(samp_rate_)) + "sps.sigmf-data";
-    std::string final_samples_path = final_samples_path_base;
+        std::to_string(COUNT_T(samp_rate_)) + "sps";
+    std::string final_samples_path = final_samples_path_base + ".sigmf-data";
     if (zstd_) {
       final_samples_path += ".zst";
     }
