@@ -382,8 +382,8 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
                sample_clock_ += batch_) {
     COUNT_T j = (in_first + i) % sample_buffer_;
     // Gate on average power.
-    volk_32f_stddev_and_mean_32f_x2(
-        stddev_pwr_.get(), avg_pwr_.get(), power_in, batch_);
+    volk_32f_stddev_and_mean_32f_x2(stddev_pwr_.get(), avg_pwr_.get(), power_in,
+                                    batch_);
     volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
     float max_pwr = power_in[*i_pwr_max_];
     if (*avg_pwr_ < min_peak_points_) {
