@@ -249,6 +249,7 @@ iq_inference_impl::iq_inference_impl(
   unsigned int alignment = volk_get_alignment();
   samples_total_.reset((float *)volk_malloc(sizeof(float), alignment));
   power_total_.reset((float *)volk_malloc(sizeof(float), alignment));
+  power_max_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
   parse_models(model_server, model_names);
   io_service_ = boost::make_shared<boost::asio::io_service>();
   work_ = boost::make_shared<boost::asio::io_service::work>(*io_service_);
@@ -308,6 +309,8 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
     metadata_json["rx_freq_sample_clock"] =
         std::to_string(output_item.rx_freq_sample_clock);
     metadata_json["serial"] = std::to_string(output_item.serial);
+    metadata_json["avg_pwr"] = std::to_string(output_item.avg_pwr);
+    metadata_json["max_pwr"] = std::to_string(output_item.max_pwr);
     nlohmann::json output_json, results_json;
     COUNT_T signal_predictions = 0;
     std::string error;
@@ -378,7 +381,10 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     COUNT_T j = (in_first + i) % sample_buffer_;
     // Gate on average power.
     volk_32f_accumulator_s32f(power_total_.get(), power_in, batch_);
-    if (*power_total_ / batch_ < min_peak_points_) {
+    float avg_pwr = *power_total_ / batch_;
+    volk_32f_index_max_16u(power_max_.get(), power_in, batch_);
+    float max_pwr = power_in[*power_max];
+    if (avg_pwr < min_peak_points_) {
       continue;
     }
     // We might get all zero samples if squelched externally - though
@@ -409,6 +415,8 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     output_item.rx_freq_sample_clock = last_rx_freq_sample_clock_;
     output_item.sample_count = batch_;
     output_item.serial = ++serial_;
+    output_item.avg_pwr = avg_pwr;
+    output_item.max_pwr = max_pwr;
     output_item.samples = new gr_complex[output_item.sample_count];
     output_item.power = new float[output_item.sample_count];
     memcpy(output_item.samples, (void *)&samples_lookback_[j * batch_],
