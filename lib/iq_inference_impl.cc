@@ -250,7 +250,7 @@ iq_inference_impl::iq_inference_impl(
   samples_total_.reset((float *)volk_malloc(sizeof(float), alignment));
   avg_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
   stddev_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
-  power_max_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
+  i_pwr_max_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
   parse_models(model_server, model_names);
   io_service_ = boost::make_shared<boost::asio::io_service>();
   work_ = boost::make_shared<boost::asio::io_service::work>(*io_service_);
@@ -384,8 +384,8 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     // Gate on average power.
     void volk_32f_stddev_and_mean_32f_x2(
         float *stddev_pwr_.get(), float *avg_pwr_.get(), power_in, batch_);
-    volk_32f_index_max_16u(i_power_max_.get(), power_in, batch_);
-    float max_pwr = power_in[*i_power_max_];
+    volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
+    float max_pwr = power_in[*i_pwr_max_];
     if (*avg_pwr_ < min_peak_points_) {
       continue;
     }
