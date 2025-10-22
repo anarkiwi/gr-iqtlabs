@@ -418,7 +418,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     output_item.sample_count = batch_;
     output_item.serial = ++serial_;
     output_item.avg_pwr = *avg_pwr_;
-    output_item.max_pwr = *max_pwr;
+    output_item.max_pwr = max_pwr;
     output_item.stddev_pwr = *stddev_pwr_;
     output_item.samples = new gr_complex[output_item.sample_count];
     output_item.power = new float[output_item.sample_count];
