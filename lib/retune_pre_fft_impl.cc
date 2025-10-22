@@ -267,11 +267,6 @@ void retune_pre_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,
   c /= nfft_;
   if (reset_tags_) {
     for (COUNT_T i = 0; i < c; ++i, in += nfft_, consumed += nfft_) {
-      if (skip_fft_count_) {
-        --skip_fft_count_;
-        slew_samples_ += nfft_;
-        continue;
-      }
       bool all_zeros = all_zeros_(in);
       // Implement the low power hold down workaround (typically for Ettus).
       // When retuning the radio, typically the radio responds relatively
@@ -288,6 +283,11 @@ void retune_pre_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,
           slew_samples_ += nfft_;
           continue;
         }
+      }
+      if (skip_fft_count_) {
+        --skip_fft_count_;
+        slew_samples_ += nfft_;
+        continue;
       }
       std::memcpy((void *)out, (void *)in, sizeof(block_type) * nfft_);
       out += nfft_;
