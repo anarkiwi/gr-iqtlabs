@@ -383,7 +383,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     volk_32f_accumulator_s32f(power_total_.get(), power_in, batch_);
     float avg_pwr = *power_total_ / batch_;
     volk_32f_index_max_16u(power_max_.get(), power_in, batch_);
-    float max_pwr = power_in[*power_max];
+    float max_pwr = power_in[*power_max_];
     if (avg_pwr < min_peak_points_) {
       continue;
     }
