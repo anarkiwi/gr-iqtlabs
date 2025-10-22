@@ -386,7 +386,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
         float *stddev_pwr_.get(), float *avg_pwr_.get(), power_in, batch_);
     volk_32f_index_max_16u(i_power_max_.get(), power_in, batch_);
     float max_pwr = power_in[*i_power_max_];
-    if (*avg_pwr < min_peak_points_) {
+    if (*avg_pwr_ < min_peak_points_) {
       continue;
     }
     // We might get all zero samples if squelched externally - though
