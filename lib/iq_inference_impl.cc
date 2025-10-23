@@ -394,7 +394,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
     // Maximum power is near DC.. don't trigger.
     uint16_t center_index = batch_ / 2;
-    uint16_t max_offset = (batch_ * 0.05) / 2;
+    uint16_t max_offset = (batch_ * 0.1) / 2;
     uint16_t offset_lo = center_index - max_offset;
     uint16_t offset_hi = center_index + max_offset;
     if (*i_pwr_max_ >= offset_lo && *i_pwr_max_ <= offset_hi) {
