@@ -34,7 +34,7 @@ documentation: |-
     power_inference: if True, infer on power as well as samples.
     background: if True, do inference in the background.
     batch: if > 1, batch inference requests.
-    dc_guard: if > 0, don't trigger inference if max power within this prop of DC.
+    dc_guard: if > 0, don't trigger if max power near DC.
 
 templates:
   imports: from gnuradio import iqtlabs
