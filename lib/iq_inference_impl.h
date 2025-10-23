@@ -245,8 +245,9 @@ private:
       last_rx_freq_sample_clock_, n_inference_, inference_count_,
       samples_since_tag_, predictions_, batch_inference_, serial_;
   int samp_rate_;
+  uint16_t offset_lo_, offset_hi_;
   TIME_T last_full_time_;
-  double min_peak_points_, confidence_;
+  double min_peak_points_, confidence_, dc_guard_;
   bool power_inference_, background_, running_;
   TIME_T last_rx_time_;
   FREQ_T last_rx_freq_;
@@ -280,7 +281,7 @@ public:
                     const std::string &model_server,
                     const std::string &model_names, double confidence,
                     COUNT_T n_inference, int samp_rate, bool power_inference,
-                    bool background, COUNT_T batch);
+                    bool background, COUNT_T batch, double dc_guard_);
   int general_work(int noutput_items, gr_vector_int &ninput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items);
