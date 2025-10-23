@@ -321,7 +321,6 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
         ss << ",";
       }
     }
-    metadata_json["power"] = ss.str();
 
     nlohmann::json output_json, results_json;
     COUNT_T signal_predictions = 0;
@@ -391,10 +390,20 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
                power_in += batch_, samples_since_tag_ += batch_,
                sample_clock_ += batch_) {
     COUNT_T j = (in_first + i) % sample_buffer_;
+
+    volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
+    // Maximum power is near DC.. don't trigger.
+    uint16_t center_index = batch_ / 2;
+    uint16_t max_offset = (batch_ * 0.05) / 2;
+    uint16_t offset_lo = center_index - max_offset;
+    uint16_t offset_hi = center_index + max_offset;
+    if (*i_pwr_max_ >= offset_lo && *i_pwr_max_ <= offset_hi) {
+      continue;
+    }
+
     // Gate on average power.
     volk_32f_stddev_and_mean_32f_x2(stddev_pwr_.get(), avg_pwr_.get(), power_in,
                                     batch_);
-    volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
     float max_pwr = power_in[*i_pwr_max_];
     if (*avg_pwr_ < min_peak_points_) {
       continue;
