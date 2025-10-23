@@ -313,6 +313,16 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
     metadata_json["avg_pwr"] = std::to_string(output_item.avg_pwr);
     metadata_json["max_pwr"] = std::to_string(output_item.max_pwr);
     metadata_json["stddev_pwr"] = std::to_string(output_item.stddev_pwr);
+
+    std::stringstream ss;
+    for (size_t i = 0; i < output_item.sample_count; ++i) {
+      ss << output_item.power[i];
+      if (i < output_item.sample_count - 1) {
+        ss << ",";
+      }
+    }
+    metadata_json["power"] = ss.str();
+
     nlohmann::json output_json, results_json;
     COUNT_T signal_predictions = 0;
     std::string error;
