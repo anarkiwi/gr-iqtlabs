@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Free Software Foundation, Inc.
+ * Copyright 2025 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(iq_inference.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(105751a43ba66b5556ad29393252d39b)                     */
+/* BINDTOOL_HEADER_FILE_HASH(15b45a982b551561187e85b61d0a64a7)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -50,6 +50,7 @@ void bind_iq_inference(py::module& m)
            py::arg("power_inference"),
            py::arg("background"),
            py::arg("batch"),
+           py::arg("dc_guard"),
            D(iq_inference,make)
         )
         

@@ -211,15 +211,17 @@
 namespace gr {
 namespace iqtlabs {
 
-iq_inference::sptr iq_inference::make(
-    const std::string &tag, COUNT_T vlen, COUNT_T n_vlen, COUNT_T sample_buffer,
-    double min_peak_points, const std::string &model_server,
-    const std::string &model_names, double confidence, COUNT_T n_inference,
-    int samp_rate, bool power_inference, bool background, COUNT_T batch) {
+iq_inference::sptr
+iq_inference::make(const std::string &tag, COUNT_T vlen, COUNT_T n_vlen,
+                   COUNT_T sample_buffer, double min_peak_points,
+                   const std::string &model_server,
+                   const std::string &model_names, double confidence,
+                   COUNT_T n_inference, int samp_rate, bool power_inference,
+                   bool background, COUNT_T batch, double dc_guard) {
   return gnuradio::make_block_sptr<iq_inference_impl>(
       tag, vlen, n_vlen, sample_buffer, min_peak_points, model_server,
       model_names, confidence, n_inference, samp_rate, power_inference,
-      background, batch);
+      background, batch, dc_guard);
 }
 
 /*
@@ -229,14 +231,15 @@ iq_inference_impl::iq_inference_impl(
     const std::string &tag, COUNT_T vlen, COUNT_T n_vlen, COUNT_T sample_buffer,
     double min_peak_points, const std::string &model_server,
     const std::string &model_names, double confidence, COUNT_T n_inference,
-    int samp_rate, bool power_inference, bool background, COUNT_T batch)
+    int samp_rate, bool power_inference, bool background, COUNT_T batch,
+    double dc_guard)
     : gr::block("iq_inference",
                 gr::io_signature::makev(
                     2 /* min inputs */, 2 /* min inputs */,
                     std::vector<int>{(int)(vlen * sizeof(gr_complex)),
                                      (int)(vlen * sizeof(float))}),
                 gr::io_signature::make(0, 0, 0)),
-      tag_(pmt::intern(tag)), vlen_(vlen), n_vlen_(n_vlen),
+      tag_(pmt::intern(tag)), vlen_(vlen), n_vlen_(n_vlen), dc_guard_(dc_guard),
       batch_(vlen_ * n_vlen_), sample_buffer_(sample_buffer), sample_clock_(0),
       last_rx_freq_sample_clock_(0), n_inference_(n_inference),
       inference_count_(n_inference), samples_since_tag_(0), predictions_(0),
@@ -245,6 +248,10 @@ iq_inference_impl::iq_inference_impl(
       confidence_(confidence), power_inference_(power_inference),
       background_(background), running_(true), last_rx_time_(0),
       last_rx_freq_(0) {
+  uint16_t max_offset = (batch_ * dc_guard_) / 2;
+  uint16_t center_index = batch_ / 2;
+  offset_lo_ = center_index - max_offset;
+  offset_hi_ = center_index + max_offset;
   samples_lookback_.reset(new gr_complex[batch_ * sample_buffer]);
   unsigned int alignment = volk_get_alignment();
   samples_total_.reset((float *)volk_malloc(sizeof(float), alignment));
@@ -313,15 +320,6 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
     metadata_json["avg_pwr"] = std::to_string(output_item.avg_pwr);
     metadata_json["max_pwr"] = std::to_string(output_item.max_pwr);
     metadata_json["stddev_pwr"] = std::to_string(output_item.stddev_pwr);
-
-    std::stringstream ss;
-    for (size_t i = 0; i < output_item.sample_count; ++i) {
-      ss << output_item.power[i];
-      if (i < output_item.sample_count - 1) {
-        ss << ",";
-      }
-    }
-
     nlohmann::json output_json, results_json;
     COUNT_T signal_predictions = 0;
     std::string error;
@@ -392,13 +390,11 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     COUNT_T j = (in_first + i) % sample_buffer_;
 
     volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
-    // Maximum power is near DC.. don't trigger.
-    uint16_t center_index = batch_ / 2;
-    uint16_t max_offset = (batch_ * 0.1) / 2;
-    uint16_t offset_lo = center_index - max_offset;
-    uint16_t offset_hi = center_index + max_offset;
-    if (*i_pwr_max_ >= offset_lo && *i_pwr_max_ <= offset_hi) {
-      continue;
+    if (dc_guard_) {
+      // Maximum power is near DC.. don't trigger.
+      if (*i_pwr_max_ >= offset_lo_ && *i_pwr_max_ <= offset_hi_) {
+        continue;
+      }
     }
 
     // Gate on average power.
