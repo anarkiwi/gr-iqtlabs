@@ -391,7 +391,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     }
 
     if (last_rx_freq_) {
-      if (retune_guard_ && samples_since_tag_ / batch < retune_guard_) {
+      if (retune_guard_ && samples_since_tag_ / n_vlen_ < retune_guard_) {
         continue;
       }
     } else {
