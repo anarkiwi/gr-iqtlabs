@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(iq_inference.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(15b45a982b551561187e85b61d0a64a7)                     */
+/* BINDTOOL_HEADER_FILE_HASH(be5eacb650feab044cd71103f1b61089)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -51,6 +51,7 @@ void bind_iq_inference(py::module& m)
            py::arg("background"),
            py::arg("batch"),
            py::arg("dc_guard"),
+           py::arg("retune_guard"),
            D(iq_inference,make)
         )
         
