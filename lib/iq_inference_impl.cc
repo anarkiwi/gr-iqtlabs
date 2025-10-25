@@ -242,11 +242,12 @@ iq_inference_impl::iq_inference_impl(
       batch_(vlen_ * n_vlen_), sample_buffer_(sample_buffer), sample_clock_(0),
       last_rx_freq_sample_clock_(0), n_inference_(n_inference),
       inference_count_(n_inference), samples_since_tag_(0), predictions_(0),
-      batch_inference_(batch), serial_(0), samp_rate_(samp_rate),
-      last_full_time_(0), min_peak_points_(min_peak_points),
-      confidence_(confidence), power_inference_(power_inference),
-      background_(background), retune_guard_(retune_guard), dc_guard_(dc_guard),
-      running_(true), last_rx_time_(0), last_rx_freq_(0) {
+      batch_inference_(batch), serial_(0), retune_guard_(retune_guard),
+      samp_rate_(samp_rate), last_full_time_(0),
+      min_peak_points_(min_peak_points), confidence_(confidence),
+      dc_guard_(dc_guard), power_inference_(power_inference),
+      background_(background), running_(true), last_rx_time_(0),
+      last_rx_freq_(0) {
   uint16_t max_offset = (batch_ * dc_guard_) / 2;
   uint16_t center_index = batch_ / 2;
   offset_lo_ = center_index - max_offset;
