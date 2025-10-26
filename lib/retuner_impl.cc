@@ -316,7 +316,7 @@ void retuner_impl::parse_tuning_ranges_(const std::string &tuning_ranges) {
       add_range_(tuning_range_freq_start, tuning_range_freq_end);
     }
   }
-  stare_mode_ = tuning_ranges_.size() == 1 && tuning_ranges_[0].steps == 1;
+  stare_mode_ = tuning_ranges_[0].steps == 1;
   tune_freq_ = tuning_ranges_[0].freq_start;
   if (stare_mode_) {
     tune_freq_ +=
