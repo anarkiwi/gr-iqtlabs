@@ -316,7 +316,7 @@ void retuner_impl::parse_tuning_ranges_(const std::string &tuning_ranges) {
       add_range_(tuning_range_freq_start, tuning_range_freq_end);
     }
   }
-  stare_mode_ = tuning_ranges_[0].steps == 1;
+  stare_mode_ = tuning_ranges_.size() == 1 && tuning_ranges_[0].steps == 1;
   tune_freq_ = tuning_ranges_[0].freq_start;
   if (stare_mode_) {
     tune_freq_ +=
@@ -344,7 +344,7 @@ void retuner_impl::next_retune_(TIME_T host_now) {
   if (last_sweep_start_ == 0) {
     last_sweep_start_ = host_now;
   } else {
-    if (tuning_range_step_ == range_steps) {
+    if (tuning_range_step_ >= range_steps) {
       tuning_range_step_ = 0;
       tuning_range_ = (tuning_range_ + 1) % tuning_ranges_.size();
       tune_freq_ = tuning_ranges_[tuning_range_].freq_start;
