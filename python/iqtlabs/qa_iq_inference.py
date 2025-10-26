@@ -298,6 +298,7 @@ class qa_iq_inference(gr_unittest.TestCase):
             background=True,
             batch=1,
             dc_guard=0,
+            retune_guard=0,
         )
 
         tb.msg_connect((strobe, "strobe"), (source, "cmd"))

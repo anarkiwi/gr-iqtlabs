@@ -243,7 +243,8 @@ private:
   pmt::pmt_t tag_;
   COUNT_T vlen_, n_vlen_, batch_, sample_buffer_, sample_clock_,
       last_rx_freq_sample_clock_, n_inference_, inference_count_,
-      samples_since_tag_, predictions_, batch_inference_, serial_;
+      samples_since_tag_, predictions_, batch_inference_, serial_,
+      retune_guard_;
   int samp_rate_;
   uint16_t offset_lo_, offset_hi_;
   TIME_T last_full_time_;
@@ -281,7 +282,8 @@ public:
                     const std::string &model_server,
                     const std::string &model_names, double confidence,
                     COUNT_T n_inference, int samp_rate, bool power_inference,
-                    bool background, COUNT_T batch, double dc_guard_);
+                    bool background, COUNT_T batch, double dc_guard_,
+                    uint64_t retune_guard);
   int general_work(int noutput_items, gr_vector_int &ninput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items);

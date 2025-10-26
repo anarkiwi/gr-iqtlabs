@@ -35,6 +35,7 @@ documentation: |-
     background: if True, do inference in the background.
     batch: if > 1, batch inference requests.
     dc_guard: if > 0, don't trigger if max power near DC.
+    retune_guard: if > 0, don't trigger this many vectors after retuning.
 
 templates:
   imports: from gnuradio import iqtlabs
@@ -84,6 +85,8 @@ parameters:
     dtype: int
   - id: dc_guard
     dtype: float
+  - id: retune_guard
+    dtype: int
 
 asserts:
   - ${ tag != "" }
