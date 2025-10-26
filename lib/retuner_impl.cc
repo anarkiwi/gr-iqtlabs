@@ -344,7 +344,7 @@ void retuner_impl::next_retune_(TIME_T host_now) {
   if (last_sweep_start_ == 0) {
     last_sweep_start_ = host_now;
   } else {
-    if (tuning_range_step_ == range_steps) {
+    if (tuning_range_step_ >= range_steps) {
       tuning_range_step_ = 0;
       tuning_range_ = (tuning_range_ + 1) % tuning_ranges_.size();
       tune_freq_ = tuning_ranges_[tuning_range_].freq_start;
