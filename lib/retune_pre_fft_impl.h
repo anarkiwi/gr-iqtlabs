@@ -227,7 +227,7 @@ private:
   COUNT_T nfft_;
   COUNT_T fft_batch_size_;
   pmt::pmt_t tag_;
-  boost::scoped_ptr<float> total_;
+  boost::scoped_ptr<uint16_t> in_max_pos_;
 
 public:
   retune_pre_fft_impl(COUNT_T nfft, COUNT_T samp_rate, COUNT_T tune_jitter_hz,
