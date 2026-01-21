@@ -417,7 +417,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     // we will receive non zero power values.
     COUNT_T j = (in_first + i) % sample_buffer_;
     const float *in_floats = (const float *)&samples_lookback_[j * batch_];
-    if (all_zeros(in_floats, batch_ * 2)) {
+    if (all_zeros_(in_floats, batch_ * 2)) {
       continue;
     }
     if (n_inference_ > 0 && --inference_count_) {
