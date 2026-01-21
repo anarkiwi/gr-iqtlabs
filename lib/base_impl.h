@@ -286,6 +286,9 @@ public:
   std::string pmt_to_string(const pmt::pmt_t &pmt);
   void parse_models(const std::string &model_server,
                     const std::string &model_names);
+  bool all_zeros_(const block_type *&in, size_t n);
+  boost::scoped_ptr<uint16_t> in_max_pos_;
+  base_impl::base_impl();
 };
 } /* namespace iqtlabs */
 } /* namespace gr */

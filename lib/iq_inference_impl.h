@@ -253,7 +253,7 @@ private:
   TIME_T last_rx_time_;
   FREQ_T last_rx_freq_;
   boost::scoped_array<gr_complex> samples_lookback_;
-  boost::scoped_ptr<float> samples_total_, avg_pwr_, stddev_pwr_;
+  boost::scoped_ptr<float> avg_pwr_, stddev_pwr_;
   boost::scoped_ptr<uint16_t> i_pwr_max_;
   boost::lockfree::queue<output_item_type,
                          boost::lockfree::capacity<MAX_INFERENCE>>

@@ -240,8 +240,6 @@ retune_pre_fft_impl::retune_pre_fft_impl(
                    tuning_ranges, tag_now, low_power_hold_down, slew_rx_time),
       nfft_(nfft), fft_batch_size_(fft_batch_size), tag_(pmt::intern(tag)) {
   message_port_register_out(TUNE_KEY);
-  unsigned int alignment = volk_get_alignment();
-  in_max_pos_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
   set_tag_propagation_policy(TPP_DONT);
   set_output_multiple(nfft_);
 }
@@ -254,12 +252,6 @@ void retune_pre_fft_impl::add_output_tags_(TIME_T rx_time, FREQ_T rx_freq,
               (rel / fft_batch_size_));
 }
 
-bool retune_pre_fft_impl::all_zeros_(const block_type *&in) {
-  const float *in_floats = (const float *)in;
-  volk_32f_index_max_16u(in_max_pos_.get(), in_floats, nfft_ * 2);
-  return in_floats[*in_max_pos_] == 0;
-}
-
 void retune_pre_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,
                                          const block_type *&in,
                                          const block_type *&out,
@@ -267,7 +259,7 @@ void retune_pre_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,
   c /= nfft_;
   if (reset_tags_) {
     for (COUNT_T i = 0; i < c; ++i, in += nfft_, consumed += nfft_) {
-      bool all_zeros = all_zeros_(in);
+      bool all_zeros = all_zeros_(in, nfft_);
       // Implement the low power hold down workaround (typically for Ettus).
       // When retuning the radio, typically the radio responds relatively
       // quickly with new rx_time and rx_freq tags acknowledging the request.
