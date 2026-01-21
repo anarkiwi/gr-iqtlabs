@@ -209,6 +209,7 @@
 #include <fstream>
 #include <iomanip>
 #include <pmt/pmt.h>
+#include <volk/volk.h>
 
 namespace gr {
 namespace iqtlabs {

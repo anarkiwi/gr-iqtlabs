@@ -203,7 +203,9 @@
  */
 
 #include "iqtlabs_types.h"
+#include <gnuradio/io_signature.h>
 #include <gnuradio/tags.h>
+#include <boost/scoped_ptr.hpp>
 #include <sigmf/sigmf.h>
 #include <string>
 
@@ -288,7 +290,7 @@ public:
                     const std::string &model_names);
   bool all_zeros_(const block_type *&in, size_t n);
   boost::scoped_ptr<uint16_t> in_max_pos_;
-  base_impl::base_impl();
+  base_impl();
 };
 } /* namespace iqtlabs */
 } /* namespace gr */
