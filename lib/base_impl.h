@@ -203,9 +203,9 @@
  */
 
 #include "iqtlabs_types.h"
+#include <boost/scoped_ptr.hpp>
 #include <gnuradio/io_signature.h>
 #include <gnuradio/tags.h>
-#include <boost/scoped_ptr.hpp>
 #include <sigmf/sigmf.h>
 #include <string>
 
