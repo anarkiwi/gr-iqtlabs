@@ -259,7 +259,7 @@ void retune_pre_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,
   c /= nfft_;
   if (reset_tags_) {
     for (COUNT_T i = 0; i < c; ++i, in += nfft_, consumed += nfft_) {
-      bool all_zeros = all_zeros_(in, nfft_);
+      bool all_zeros = all_zeros_((const block_type *)in, nfft_);
       // Implement the low power hold down workaround (typically for Ettus).
       // When retuning the radio, typically the radio responds relatively
       // quickly with new rx_time and rx_freq tags acknowledging the request.
