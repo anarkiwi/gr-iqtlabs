@@ -416,8 +416,8 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     // We might get all zero samples if squelched externally - though
     // we will receive non zero power values.
     COUNT_T j = (in_first + i) % sample_buffer_;
-    if (all_zeros_((const block_type *)&samples_lookback_[j * batch_],
-                   batch_ * 2)) {
+    if (all_zeros_((const block_type *&)samples_lookback_[j * batch_],
+                   batch_)) {
       continue;
     }
     if (n_inference_ > 0 && --inference_count_) {

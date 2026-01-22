@@ -365,7 +365,7 @@ void base_impl::parse_models(const std::string &model_server,
 
 bool base_impl::all_zeros_(const block_type *&in, size_t n) {
   const float *in_floats = (const float *)in;
-  volk_32f_index_max_16u(in_max_pos_.get(), in_floats, n);
+  volk_32f_index_max_16u(in_max_pos_.get(), in_floats, n * 2);
   return in_floats[*in_max_pos_] == 0;
 }
 } /* namespace iqtlabs */
