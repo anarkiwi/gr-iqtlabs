@@ -203,6 +203,8 @@
  */
 
 #include "iqtlabs_types.h"
+#include <boost/scoped_ptr.hpp>
+#include <gnuradio/block.h>
 #include <gnuradio/tags.h>
 #include <sigmf/sigmf.h>
 #include <string>
@@ -211,6 +213,9 @@
 
 namespace gr {
 namespace iqtlabs {
+
+using block_type = gr_complex;
+
 const pmt::pmt_t CMD_KEY = pmt::mp("cmd");
 const pmt::pmt_t FREQ_KEY = pmt::mp("freq");
 const pmt::pmt_t TUNE_KEY = pmt::mp("tune");
@@ -286,6 +291,9 @@ public:
   std::string pmt_to_string(const pmt::pmt_t &pmt);
   void parse_models(const std::string &model_server,
                     const std::string &model_names);
+  bool all_zeros_(const block_type *in, size_t n);
+  boost::scoped_ptr<uint16_t> in_max_pos_;
+  base_impl();
 };
 } /* namespace iqtlabs */
 } /* namespace gr */

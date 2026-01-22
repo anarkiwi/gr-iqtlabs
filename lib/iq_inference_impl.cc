@@ -254,7 +254,6 @@ iq_inference_impl::iq_inference_impl(
   offset_hi_ = center_index + max_offset;
   samples_lookback_.reset(new gr_complex[batch_ * sample_buffer]);
   unsigned int alignment = volk_get_alignment();
-  samples_total_.reset((float *)volk_malloc(sizeof(float), alignment));
   avg_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
   stddev_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
   i_pwr_max_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
@@ -417,9 +416,8 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     // We might get all zero samples if squelched externally - though
     // we will receive non zero power values.
     COUNT_T j = (in_first + i) % sample_buffer_;
-    const float *in_floats = (const float *)&samples_lookback_[j * batch_];
-    volk_32f_accumulator_s32f(samples_total_.get(), in_floats, batch_ * 2);
-    if (*samples_total_ == 0) {
+    if (all_zeros_((const block_type *)&samples_lookback_[j * batch_],
+                   batch_)) {
       continue;
     }
     if (n_inference_ > 0 && --inference_count_) {

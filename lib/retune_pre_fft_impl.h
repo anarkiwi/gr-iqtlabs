@@ -217,7 +217,6 @@ using block_type = gr_complex;
 
 class retune_pre_fft_impl : public retune_pre_fft, base_impl, retuner_impl {
 private:
-  bool all_zeros_(const block_type *&in);
   void process_items_(COUNT_T c, COUNT_T &consumed, const block_type *&in,
                       const block_type *&out, COUNT_T &produced);
   COUNT_T process_tags_(COUNT_T in_count, COUNT_T in_first,
@@ -227,7 +226,6 @@ private:
   COUNT_T nfft_;
   COUNT_T fft_batch_size_;
   pmt::pmt_t tag_;
-  boost::scoped_ptr<uint16_t> in_max_pos_;
 
 public:
   retune_pre_fft_impl(COUNT_T nfft, COUNT_T samp_rate, COUNT_T tune_jitter_hz,

@@ -209,9 +209,15 @@
 #include <fstream>
 #include <iomanip>
 #include <pmt/pmt.h>
+#include <volk/volk.h>
 
 namespace gr {
 namespace iqtlabs {
+base_impl::base_impl() {
+  unsigned int alignment = volk_get_alignment();
+  in_max_pos_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
+}
+
 std::string base_impl::get_prefix_file_(const std::string &file,
                                         const std::string &prefix) {
   boost::filesystem::path orig_path(file);
@@ -355,6 +361,12 @@ void base_impl::parse_models(const std::string &model_server,
   if (model_names_.size() == 0) {
     std::cerr << "missing model name(s)" << std::endl;
   }
+}
+
+bool base_impl::all_zeros_(const block_type *in, size_t n) {
+  const float *in_floats = (const float *)in;
+  volk_32f_index_max_16u(in_max_pos_.get(), in_floats, n * 2);
+  return in_floats[*in_max_pos_] == 0;
 }
 } /* namespace iqtlabs */
 } /* namespace gr */
