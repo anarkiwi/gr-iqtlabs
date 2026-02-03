@@ -248,15 +248,16 @@ iq_inference_impl::iq_inference_impl(
       dc_guard_(dc_guard), power_inference_(power_inference),
       background_(background), running_(true), last_rx_time_(0),
       last_rx_freq_(0) {
-  uint16_t max_offset = (batch_ * dc_guard_) / 2;
-  uint16_t center_index = batch_ / 2;
-  offset_lo_ = center_index - max_offset;
-  offset_hi_ = center_index + max_offset;
+  uint16_t max_offset = (vlen_ * dc_guard_) / 2;
+  center_index_ = vlen_ / 2;
+  vlen_freq_ = samp_rate_ / vlen_;
+  offset_lo_ = center_index_ - max_offset;
+  offset_hi_ = center_index_ + max_offset;
   samples_lookback_.reset(new gr_complex[batch_ * sample_buffer]);
   unsigned int alignment = volk_get_alignment();
   avg_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
   stddev_pwr_.reset((float *)volk_malloc(sizeof(float), alignment));
-  i_pwr_max_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
+  i_max_pwr_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
   parse_models(model_server, model_names);
   io_service_ = boost::make_shared<boost::asio::io_service>();
   work_ = boost::make_shared<boost::asio::io_service::work>(*io_service_);
@@ -312,6 +313,8 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
     metadata_json["sample_clock"] = std::to_string(output_item.sample_clock);
     metadata_json["sample_count"] = std::to_string(output_item.sample_count);
     metadata_json["rx_freq"] = std::to_string(output_item.rx_freq);
+    metadata_json["max_pwr_rx_freq"] =
+        std::to_string(output_item.max_pwr_rx_freq);
     metadata_json["sample_rate"] = std::to_string(samp_rate_);
     metadata_json["rx_freq_sample_clock"] =
         std::to_string(output_item.rx_freq_sample_clock);
@@ -398,18 +401,25 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
       continue;
     }
 
-    volk_32f_index_max_16u(i_pwr_max_.get(), power_in, batch_);
+    volk_32f_index_max_16u(i_max_pwr_.get(), power_in, batch_);
+    uint16_t max_pwr_bin = *i_max_pwr_ % vlen_;
     if (dc_guard_) {
       // Maximum power is near DC.. don't trigger.
-      if (*i_pwr_max_ >= offset_lo_ && *i_pwr_max_ <= offset_hi_) {
+      if (max_pwr_bin >= offset_lo_ && max_pwr_bin <= offset_hi_) {
         continue;
       }
+    }
+    FREQ_T max_pwr_rx_freq = last_rx_freq_;
+    if (max_pwr_bin > center_index_) {
+      max_pwr_rx_freq += (max_pwr_bin - center_index_) * vlen_freq_;
+    } else if (max_pwr_bin < center_index_) {
+      max_pwr_rx_freq -= (center_index_ - max_pwr_bin) * vlen_freq_;
     }
 
     // Gate on average power.
     volk_32f_stddev_and_mean_32f_x2(stddev_pwr_.get(), avg_pwr_.get(), power_in,
                                     batch_);
-    float max_pwr = power_in[*i_pwr_max_];
+    float max_pwr = power_in[*i_max_pwr_];
     if (*avg_pwr_ < min_peak_points_) {
       continue;
     }
@@ -437,6 +447,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     output_item.serial = ++serial_;
     output_item.avg_pwr = *avg_pwr_;
     output_item.max_pwr = max_pwr;
+    output_item.max_pwr_rx_freq = max_pwr_rx_freq;
     output_item.stddev_pwr = *stddev_pwr_;
     output_item.samples = new gr_complex[output_item.sample_count];
     output_item.power = new float[output_item.sample_count];

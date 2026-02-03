@@ -236,6 +236,7 @@ typedef struct output_item {
   float avg_pwr;
   float max_pwr;
   float stddev_pwr;
+  FREQ_T max_pwr_rx_freq;
 } output_item_type;
 
 class iq_inference_impl : public iq_inference, base_impl {
@@ -246,15 +247,15 @@ private:
       samples_since_tag_, predictions_, batch_inference_, serial_,
       retune_guard_;
   int samp_rate_;
-  uint16_t offset_lo_, offset_hi_;
+  uint16_t offset_lo_, offset_hi_, center_index_;
   TIME_T last_full_time_;
   double min_peak_points_, confidence_, dc_guard_;
   bool power_inference_, background_, running_;
   TIME_T last_rx_time_;
-  FREQ_T last_rx_freq_;
+  FREQ_T last_rx_freq_, vlen_freq_;
   boost::scoped_array<gr_complex> samples_lookback_;
   boost::scoped_ptr<float> avg_pwr_, stddev_pwr_;
-  boost::scoped_ptr<uint16_t> i_pwr_max_;
+  boost::scoped_ptr<uint16_t> i_max_pwr_;
   boost::lockfree::queue<output_item_type,
                          boost::lockfree::capacity<MAX_INFERENCE>>
       inference_q_;
