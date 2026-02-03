@@ -313,7 +313,8 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
     metadata_json["sample_clock"] = std::to_string(output_item.sample_clock);
     metadata_json["sample_count"] = std::to_string(output_item.sample_count);
     metadata_json["rx_freq"] = std::to_string(output_item.rx_freq);
-    metadata_json["max_pwr_rx_freq"] = std::to_string(output_item.max_pwr_rx_freq);
+    metadata_json["max_pwr_rx_freq"] =
+        std::to_string(output_item.max_pwr_rx_freq);
     metadata_json["sample_rate"] = std::to_string(samp_rate_);
     metadata_json["rx_freq_sample_clock"] =
         std::to_string(output_item.rx_freq_sample_clock);
@@ -410,9 +411,9 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     }
     FREQ_T max_pwr_rx_freq = rx_freq;
     if (max_pwr_bin > center_index_) {
-        max_pwr_rx_freq += (max_pwr_bin - center_index_) * vlen_freq_;
+      max_pwr_rx_freq += (max_pwr_bin - center_index_) * vlen_freq_;
     } else if (max_pwr_bin < center_index_) {
-        max_pwr_rx_freq -= (center_index_ - max_pwr_bin) * vlen_freq_;
+      max_pwr_rx_freq -= (center_index_ - max_pwr_bin) * vlen_freq_;
     }
 
     // Gate on average power.
