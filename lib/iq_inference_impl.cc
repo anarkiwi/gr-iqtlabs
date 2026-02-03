@@ -409,7 +409,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
         continue;
       }
     }
-    FREQ_T max_pwr_rx_freq = rx_freq;
+    FREQ_T max_pwr_rx_freq = last_rx_freq_;
     if (max_pwr_bin > center_index_) {
       max_pwr_rx_freq += (max_pwr_bin - center_index_) * vlen_freq_;
     } else if (max_pwr_bin < center_index_) {
