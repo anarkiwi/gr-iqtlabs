@@ -219,6 +219,8 @@ using block_type = gr_complex;
 const pmt::pmt_t CMD_KEY = pmt::mp("cmd");
 const pmt::pmt_t FREQ_KEY = pmt::mp("freq");
 const pmt::pmt_t TUNE_KEY = pmt::mp("tune");
+const pmt::pmt_t ANTENNA_KEY = pmt::mp("antenna");
+
 const pmt::pmt_t RX_TIME_KEY = pmt::string_to_symbol("rx_time");
 const pmt::pmt_t RX_FREQ_KEY = pmt::string_to_symbol("rx_freq");
 const pmt::pmt_t INFERENCE_KEY = pmt::mp("inference");
@@ -287,6 +289,7 @@ public:
                 std::vector<tag_t> &rx_freq_tags,
                 std::vector<TIME_T> &rx_times);
   pmt::pmt_t tune_rx_msg(COUNT_T tune_freq, bool tag_now);
+  pmt::pmt_t ant_msg(const std::string &antenna);
   pmt::pmt_t string_to_pmt(const std::string &s);
   std::string pmt_to_string(const pmt::pmt_t &pmt);
   void parse_models(const std::string &model_server,
