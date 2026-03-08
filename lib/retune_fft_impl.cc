@@ -268,6 +268,7 @@ retune_fft_impl::retune_fft_impl(
   peak_.reset((float *)volk_malloc(sizeof(float) * nfft_, alignment));
   in_max_pos_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
   outbuf_p.reset(new boost::iostreams::filtering_ostream());
+  message_port_register_out(ANTENNA_KEY);
   message_port_register_out(TUNE_KEY);
   message_port_register_out(JSON_KEY);
   message_port_register_in(CMD_KEY);
