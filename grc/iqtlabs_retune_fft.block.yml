@@ -57,6 +57,7 @@ documentation: |-
                   sample count.
     peak_fft_range: if > 0, calculate FFT peak of averages over this many
                     windows, if 0 calculate average over whole bucket.
+    antenna_switch: optional list of antennas to iterate through.
 
   example JSON output:
     { "ts": <epoch time>, "sweep start": <epoch time>,
@@ -76,7 +77,7 @@ templates:
     ${skip_tune_step_fft}, ${fft_min}, ${fft_max}, ${sdir}, ${write_step_fft},
     ${bucket_range}, ${tuning_ranges}, ${description}, ${rotate_secs},
     ${pre_fft}, ${tag_now}, ${low_power_hold_down), ${slew_rx_time},
-    ${peak_fft_range})
+    ${peak_fft_range}, ${antenna_switch})
 
 cpp_templates:
   includes: ['#include <gnuradio/iqtlabs/retune_fft.h>']
@@ -88,7 +89,7 @@ cpp_templates:
     ${skip_tune_step_fft}, ${fft_min}, ${fft_max}, ${sdir}, ${write_step_fft},
     ${bucket_range}, ${tuning_ranges}, ${description}, ${rotate_secs},
     ${pre_fft}, ${tag_now}, ${low_power_hold_down), ${slew_rx_time},
-    ${peak_fft_range});
+    ${peak_fft_range}, ${antenna_switch});
   link: ['libgnuradio-iqtlabs.so']
 
 asserts:
@@ -142,6 +143,8 @@ parameters:
     dtype: bool
   - id: peak_fft_range
     dtype: int
+  - id: antenna_switch
+    dtype: str
 
 inputs:
   - label: input

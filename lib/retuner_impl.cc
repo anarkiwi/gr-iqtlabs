@@ -214,7 +214,8 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
                            COUNT_T tune_step_hz, COUNT_T tune_step_fft,
                            COUNT_T skip_tune_step_fft,
                            const std::string &tuning_ranges, bool tag_now,
-                           bool low_power_hold_down, bool slew_rx_time)
+                           bool low_power_hold_down, bool slew_rx_time,
+                           const std::string &antenna_switch)
     : samp_rate_(samp_rate), tune_jitter_hz_(tune_jitter_hz),
       freq_start_(freq_start), freq_end_(freq_end), tune_step_hz_(tune_step_hz),
       tune_step_fft_(tune_step_fft), skip_tune_step_fft_(skip_tune_step_fft),
@@ -223,7 +224,8 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
       pending_retune_(0), total_tune_count_(0), slew_samples_(0),
       tag_now_(tag_now), low_power_hold_down_(low_power_hold_down),
       slew_rx_time_(slew_rx_time), in_hold_down_(false), reset_tags_(false),
-      tune_freq_(0), last_rx_freq_(0), last_rx_time_(0), last_sweep_start_(0) {
+      tune_freq_(0), last_rx_freq_(0), last_rx_time_(0), last_sweep_start_(0),
+      total_sweep_count_(0) {
   std::random_device rand_dev;
   // cppcheck-suppress useInitializationList
   rand_gen_ = std::mt19937(rand_dev());
@@ -232,6 +234,8 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
   if (low_power_hold_down_ && !stare_mode_) {
     reset_tags_ = true;
   }
+  boost::split(antenna_switch_raw_, antenna_switch, boost::is_any_of(","),
+               boost::token_compress_on);
 }
 
 void retuner_impl::add_range_(COUNT_T freq_start, COUNT_T freq_end) {
@@ -324,13 +328,14 @@ void retuner_impl::parse_tuning_ranges_(const std::string &tuning_ranges) {
   }
 }
 
-void retuner_impl::next_retune_(TIME_T host_now) {
+bool retuner_impl::next_retune_(TIME_T host_now) {
+  bool sweep_reset = false;
   ++total_tune_count_;
   ++pending_retune_;
   last_tuning_range_ = tuning_range_;
   if (stare_mode_) {
     last_sweep_start_ = host_now;
-    return;
+    return sweep_reset;
   }
   COUNT_T range_steps = tuning_ranges_[tuning_range_].steps;
   tune_freq_ += tune_step_hz_;
@@ -343,6 +348,8 @@ void retuner_impl::next_retune_(TIME_T host_now) {
   ++tuning_range_step_;
   if (last_sweep_start_ == 0) {
     last_sweep_start_ = host_now;
+    ++total_sweep_count_;
+    sweep_reset = true;
   } else {
     if (tuning_range_step_ >= range_steps) {
       tuning_range_step_ = 0;
@@ -350,6 +357,8 @@ void retuner_impl::next_retune_(TIME_T host_now) {
       tune_freq_ = tuning_ranges_[tuning_range_].freq_start;
       if (tuning_range_ == 0) {
         last_sweep_start_ = host_now;
+        ++total_sweep_count_;
+        sweep_reset = true;
       }
     }
   }
@@ -357,6 +366,7 @@ void retuner_impl::next_retune_(TIME_T host_now) {
     in_hold_down_ = true;
   }
   slew_samples_ = 0;
+  return sweep_reset;
 }
 
 // Attempt to account for elapsed time since tuning tag was received,

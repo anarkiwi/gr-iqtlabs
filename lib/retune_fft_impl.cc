@@ -228,12 +228,13 @@ retune_fft::make(const std::string &tag, COUNT_T nfft, COUNT_T samp_rate,
                  double bucket_range, const std::string &tuning_ranges,
                  const std::string &description, COUNT_T rotate_secs,
                  bool pre_fft, bool tag_now, bool low_power_hold_down,
-                 bool slew_rx_time, COUNT_T peak_fft_range) {
+                 bool slew_rx_time, COUNT_T peak_fft_range,
+                 const std::string &antenna_switch) {
   return gnuradio::make_block_sptr<retune_fft_impl>(
       tag, nfft, samp_rate, tune_jitter_hz, freq_start, freq_end, tune_step_hz,
       tune_step_fft, skip_tune_step_fft, fft_min, fft_max, sdir, write_step_fft,
       bucket_range, tuning_ranges, description, rotate_secs, pre_fft, tag_now,
-      low_power_hold_down, slew_rx_time, peak_fft_range);
+      low_power_hold_down, slew_rx_time, peak_fft_range, antenna_switch);
 }
 
 retune_fft_impl::retune_fft_impl(
@@ -244,7 +245,8 @@ retune_fft_impl::retune_fft_impl(
     COUNT_T write_step_fft, double bucket_range,
     const std::string &tuning_ranges, const std::string &description,
     COUNT_T rotate_secs, bool pre_fft, bool tag_now, bool low_power_hold_down,
-    bool slew_rx_time, COUNT_T peak_fft_range)
+    bool slew_rx_time, COUNT_T peak_fft_range,
+    const std::string &antenna_switch)
     : gr::block("retune_fft",
                 gr::io_signature::make(1 /* min inputs */, 1 /* max inputs */,
                                        nfft * sizeof(input_type)),
@@ -252,7 +254,8 @@ retune_fft_impl::retune_fft_impl(
                                        nfft * sizeof(input_type))),
       retuner_impl(samp_rate, tune_jitter_hz, freq_start, freq_end,
                    tune_step_hz, tune_step_fft, skip_tune_step_fft,
-                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time),
+                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time,
+                   antenna_switch),
       tag_(pmt::intern(tag)), nfft_(nfft), peak_fft_range_(peak_fft_range),
       write_step_fft_(write_step_fft), rotate_secs_(rotate_secs),
       sample_count_(0), write_step_fft_count_(write_step_fft), sdir_(sdir),
@@ -453,9 +456,9 @@ void retune_fft_impl::write_buckets_(TIME_T host_now) {
     return;
   }
   std::stringstream ss("", std::ios_base::app | std::ios_base::out);
-  ss << "{"
-     << "\"ts\": " << host_now_str_(host_now)
+  ss << "{" << "\"ts\": " << host_now_str_(host_now)
      << ", \"sweep_start\": " << host_now_str_(last_sweep_start_)
+     << ", \"total_sweep_count\": " << total_sweep_count_
      << ", \"total_tune_count\": " << total_tune_count_ << ", \"config\": {"
      << "\"description\": \"" << description_ << "\""
      << ", \"tuning_ranges\": \"" << describe_ranges_() << "\""

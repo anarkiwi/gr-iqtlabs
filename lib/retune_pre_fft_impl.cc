@@ -216,11 +216,12 @@ retune_pre_fft::make(COUNT_T nfft, COUNT_T samp_rate, COUNT_T tune_jitter_hz,
                      COUNT_T freq_start, COUNT_T freq_end, COUNT_T tune_step_hz,
                      COUNT_T tune_step_fft, COUNT_T skip_tune_step_fft,
                      const std::string &tuning_ranges, bool tag_now,
-                     bool low_power_hold_down, bool slew_rx_time) {
+                     bool low_power_hold_down, bool slew_rx_time,
+                     const std::string &antenna_switch) {
   return gnuradio::make_block_sptr<retune_pre_fft_impl>(
       nfft, samp_rate, tune_jitter_hz, fft_batch_size, tag, freq_start,
       freq_end, tune_step_hz, tune_step_fft, skip_tune_step_fft, tuning_ranges,
-      tag_now, low_power_hold_down, slew_rx_time);
+      tag_now, low_power_hold_down, slew_rx_time, antenna_switch);
 }
 
 retune_pre_fft_impl::retune_pre_fft_impl(
@@ -228,7 +229,8 @@ retune_pre_fft_impl::retune_pre_fft_impl(
     COUNT_T fft_batch_size, const std::string &tag, COUNT_T freq_start,
     COUNT_T freq_end, COUNT_T tune_step_hz, COUNT_T tune_step_fft,
     COUNT_T skip_tune_step_fft, const std::string &tuning_ranges, bool tag_now,
-    bool low_power_hold_down, bool slew_rx_time)
+    bool low_power_hold_down, bool slew_rx_time,
+    const std::string &antenna_switch)
     : gr::block(
           "retune_pre_fft",
           gr::io_signature::make(1 /* min inputs */, 1 /* max inputs */,
@@ -237,7 +239,8 @@ retune_pre_fft_impl::retune_pre_fft_impl(
                                  sizeof(block_type) * nfft * fft_batch_size)),
       retuner_impl(samp_rate, tune_jitter_hz, freq_start, freq_end,
                    tune_step_hz, tune_step_fft, skip_tune_step_fft,
-                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time),
+                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time,
+                   antenna_switch),
       nfft_(nfft), fft_batch_size_(fft_batch_size), tag_(pmt::intern(tag)) {
   message_port_register_out(TUNE_KEY);
   set_tag_propagation_policy(TPP_DONT);
