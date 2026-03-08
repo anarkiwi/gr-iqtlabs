@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Free Software Foundation, Inc.
+ * Copyright 2026 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(retune_pre_fft.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(265b0d93aae52b3c826e485fd6b36c16)                     */
+/* BINDTOOL_HEADER_FILE_HASH(abc98bfad9952aa89df4a98f008c35a4)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -51,6 +51,7 @@ void bind_retune_pre_fft(py::module& m)
            py::arg("tag_now"),
            py::arg("low_power_hold_down"),
            py::arg("slew_rx_time"),
+           py::arg("antenna_switch"),
            D(retune_pre_fft,make)
         )
         

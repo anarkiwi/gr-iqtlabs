@@ -36,6 +36,7 @@ documentation: |-
                          workaround).
     slew_rx_time: if True and low_power_hold down, slew rx_time based on
                   sample count.
+    antenna_switch: optional list of antennas to iterate through.
 
 templates:
   imports: from gnuradio import iqtlabs
@@ -44,7 +45,7 @@ templates:
     ${nfft}, ${samp_rate}, ${tune_jitter_hz} ${fft_batch_size}, ${tag},
     ${freq_start}, ${freq_end}, ${tune_step_hz}, ${tune_step_fft},
     ${skip_tune_step_fft}, ${tuning_ranges}, ${tag_now},
-    ${low_power_hold_down}, ${slew_rx_time})
+    ${low_power_hold_down}, ${slew_rx_time}, ${antenna_switch})
 
 cpp_templates:
   includes: ['#include <gnuradio/iqtlabs/retune_pre_fft.h>']
@@ -54,7 +55,7 @@ cpp_templates:
     ${nfft}, ${samp_rate}, ${tune_jitter_hz}, ${fft_batch_size}, ${tag},
     {freq_start}, ${freq_end}, ${tune_step_hz}, ${tune_step_fft},
     ${skip_tune_step_fft}, ${tuning_ranges}, ${tag_now},
-    ${low_power_hold_down}, ${slew_rx_time});
+    ${low_power_hold_down}, ${slew_rx_time}, ${antenna_switch});
   link: ['libgnuradio-iqtlabs.so']
 
 parameters:
@@ -87,7 +88,8 @@ parameters:
     dtype: bool
   - id: slew_rx_time
     dtype: bool
-
+  - id: antenna_switch
+    dtype: str
 
 inputs:
   - label: input

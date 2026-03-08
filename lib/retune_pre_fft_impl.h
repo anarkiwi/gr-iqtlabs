@@ -234,7 +234,8 @@ public:
                       COUNT_T tune_step_hz, COUNT_T tune_step_fft,
                       COUNT_T skip_tune_step_fft,
                       const std::string &tuning_ranges, bool tag_now,
-                      bool low_power_hold_down, bool slew_rx_time);
+                      bool low_power_hold_down, bool slew_rx_time,
+		      const std::string &antenna_switch);
   ~retune_pre_fft_impl();
   int general_work(int noutput_items, gr_vector_int &ninput_items,
                    gr_vector_const_void_star &input_items,

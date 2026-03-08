@@ -228,12 +228,13 @@ retune_fft::make(const std::string &tag, COUNT_T nfft, COUNT_T samp_rate,
                  double bucket_range, const std::string &tuning_ranges,
                  const std::string &description, COUNT_T rotate_secs,
                  bool pre_fft, bool tag_now, bool low_power_hold_down,
-                 bool slew_rx_time, COUNT_T peak_fft_range) {
+                 bool slew_rx_time, COUNT_T peak_fft_range,
+		 const std::string &antenna_switch) {
   return gnuradio::make_block_sptr<retune_fft_impl>(
       tag, nfft, samp_rate, tune_jitter_hz, freq_start, freq_end, tune_step_hz,
       tune_step_fft, skip_tune_step_fft, fft_min, fft_max, sdir, write_step_fft,
       bucket_range, tuning_ranges, description, rotate_secs, pre_fft, tag_now,
-      low_power_hold_down, slew_rx_time, peak_fft_range);
+      low_power_hold_down, slew_rx_time, peak_fft_range, antenna_switch);
 }
 
 retune_fft_impl::retune_fft_impl(
@@ -244,7 +245,8 @@ retune_fft_impl::retune_fft_impl(
     COUNT_T write_step_fft, double bucket_range,
     const std::string &tuning_ranges, const std::string &description,
     COUNT_T rotate_secs, bool pre_fft, bool tag_now, bool low_power_hold_down,
-    bool slew_rx_time, COUNT_T peak_fft_range)
+    bool slew_rx_time, COUNT_T peak_fft_range,
+    const std::string &antenna_switch)
     : gr::block("retune_fft",
                 gr::io_signature::make(1 /* min inputs */, 1 /* max inputs */,
                                        nfft * sizeof(input_type)),
