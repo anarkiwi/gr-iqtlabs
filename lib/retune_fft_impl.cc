@@ -229,7 +229,7 @@ retune_fft::make(const std::string &tag, COUNT_T nfft, COUNT_T samp_rate,
                  const std::string &description, COUNT_T rotate_secs,
                  bool pre_fft, bool tag_now, bool low_power_hold_down,
                  bool slew_rx_time, COUNT_T peak_fft_range,
-		 const std::string &antenna_switch) {
+                 const std::string &antenna_switch) {
   return gnuradio::make_block_sptr<retune_fft_impl>(
       tag, nfft, samp_rate, tune_jitter_hz, freq_start, freq_end, tune_step_hz,
       tune_step_fft, skip_tune_step_fft, fft_min, fft_max, sdir, write_step_fft,
