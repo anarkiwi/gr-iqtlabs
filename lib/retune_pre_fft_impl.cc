@@ -243,6 +243,7 @@ retune_pre_fft_impl::retune_pre_fft_impl(
                    antenna_switch),
       nfft_(nfft), fft_batch_size_(fft_batch_size), tag_(pmt::intern(tag)) {
   message_port_register_out(TUNE_KEY);
+  message_port_register_out(ANTENNA_KEY);
   set_tag_propagation_policy(TPP_DONT);
   set_output_multiple(nfft_);
 }
