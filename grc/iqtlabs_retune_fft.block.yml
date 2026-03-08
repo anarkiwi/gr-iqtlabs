@@ -162,6 +162,8 @@ outputs:
     optional: 1
   - label: tune
     domain: message
+  - label: antenna
+    domain: message
   - label: json
     domain: message
 
