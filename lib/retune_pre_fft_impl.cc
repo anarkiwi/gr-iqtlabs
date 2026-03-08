@@ -239,7 +239,8 @@ retune_pre_fft_impl::retune_pre_fft_impl(
                                  sizeof(block_type) * nfft * fft_batch_size)),
       retuner_impl(samp_rate, tune_jitter_hz, freq_start, freq_end,
                    tune_step_hz, tune_step_fft, skip_tune_step_fft,
-                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time),
+                   tuning_ranges, tag_now, low_power_hold_down, slew_rx_time,
+                   antenna_switch),
       nfft_(nfft), fft_batch_size_(fft_batch_size), tag_(pmt::intern(tag)) {
   message_port_register_out(TUNE_KEY);
   set_tag_propagation_policy(TPP_DONT);

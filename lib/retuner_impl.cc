@@ -214,7 +214,8 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
                            COUNT_T tune_step_hz, COUNT_T tune_step_fft,
                            COUNT_T skip_tune_step_fft,
                            const std::string &tuning_ranges, bool tag_now,
-                           bool low_power_hold_down, bool slew_rx_time)
+                           bool low_power_hold_down, bool slew_rx_time,
+                           const std::string &antenna_switch)
     : samp_rate_(samp_rate), tune_jitter_hz_(tune_jitter_hz),
       freq_start_(freq_start), freq_end_(freq_end), tune_step_hz_(tune_step_hz),
       tune_step_fft_(tune_step_fft), skip_tune_step_fft_(skip_tune_step_fft),
@@ -232,6 +233,8 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
   if (low_power_hold_down_ && !stare_mode_) {
     reset_tags_ = true;
   }
+  boost::split(antenna_switch_raw_, antenna_switch, boost::is_any_of(","),
+               boost::token_compress_on);
 }
 
 void retuner_impl::add_range_(COUNT_T freq_start, COUNT_T freq_end) {

@@ -230,7 +230,8 @@ public:
   retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz, COUNT_T freq_start,
                COUNT_T freq_end, COUNT_T tune_step_hz, COUNT_T tune_step_fft,
                COUNT_T skip_tune_step_fft, const std::string &tuning_ranges,
-               bool tag_now, bool low_power_hold_down, bool slew_rx_time);
+               bool tag_now, bool low_power_hold_down, bool slew_rx_time,
+               const std::string &antenna_switch);
   void add_range_(COUNT_T freq_start, COUNT_T freq_end);
   bool need_retune_(COUNT_T n);
   void parse_tuning_ranges_(const std::string &tuning_ranges);
@@ -250,6 +251,7 @@ public:
   std::vector<tuning_range_t> tuning_ranges_;
   std::mt19937 rand_gen_;
   std::uniform_int_distribution<int> rand_dist_;
+  std::vector<std::string> antenna_switch_raw_;
 };
 } /* namespace iqtlabs */
 } /* namespace gr */
