@@ -212,14 +212,14 @@
 namespace gr {
 namespace iqtlabs {
 
-#define RETUNE_NOW()                                                                                              \
-  {                                                                                                               \
-    d_logger->debug("retuning to {} (stare {})", tune_freq_, stare_mode_);                                        \
-    message_port_pub(TUNE_KEY, tune_rx_msg(tune_freq_, tag_now_));                                                \
-    bool sweep_reset = next_retune_(host_now_());                                                                 \
-    if (sweep_reset && antenna_switch_raw_.size() > 1) {                                                          \
-      message_port_pub(ANTENNA_KEY, ant_msg(antenna_switch_raw[total_sweep_count_ % antenna_switch_raw_.size()]); \
-    }                                                                                                             \
+#define RETUNE_NOW()                                                                                               \
+  {                                                                                                                \
+    d_logger->debug("retuning to {} (stare {})", tune_freq_, stare_mode_);                                         \
+    message_port_pub(TUNE_KEY, tune_rx_msg(tune_freq_, tag_now_));                                                 \
+    bool sweep_reset = next_retune_(host_now_());                                                                  \
+    if (sweep_reset && antenna_switch_raw_.size() > 1) {                                                           \
+      message_port_pub(ANTENNA_KEY, ant_msg(antenna_switch_raw_[total_sweep_count_ % antenna_switch_raw_.size()]); \
+    }                                                                                                              \
   }
 
 typedef struct {
