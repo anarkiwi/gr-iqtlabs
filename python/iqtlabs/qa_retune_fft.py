@@ -586,6 +586,7 @@ class qa_getters(gr_unittest.TestCase):
             low_power_hold_down=False,
             slew_rx_time=False,
             peak_fft_range=0,
+            antenna_switch="",
         )
         self.assertTrue(iqtlabs_retune_fft_0.get_stare_mode())
         self.assertEqual(1.5e6, iqtlabs_retune_fft_0.get_tune_freq())
