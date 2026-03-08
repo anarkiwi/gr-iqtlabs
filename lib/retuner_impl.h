@@ -212,11 +212,14 @@
 namespace gr {
 namespace iqtlabs {
 
-#define RETUNE_NOW()                                                           \
-  {                                                                            \
-    d_logger->debug("retuning to {} (stare {})", tune_freq_, stare_mode_);     \
-    message_port_pub(TUNE_KEY, tune_rx_msg(tune_freq_, tag_now_));             \
-    next_retune_(host_now_());                                                 \
+#define RETUNE_NOW()                                                                                              \
+  {                                                                                                               \
+    d_logger->debug("retuning to {} (stare {})", tune_freq_, stare_mode_);                                        \
+    message_port_pub(TUNE_KEY, tune_rx_msg(tune_freq_, tag_now_));                                                \
+    bool sweep_reset = next_retune_(host_now_());                                                                 \
+    if (sweep_reset && antenna_switch_raw_.size() > 1) {                                                          \
+      message_port_pub(ANTENNA_KEY, ant_msg(antenna_switch_raw[total_sweep_count_ % antenna_switch_raw_.size()]); \
+    }                                                                                                             \
   }
 
 typedef struct {
@@ -235,14 +238,14 @@ public:
   void add_range_(COUNT_T freq_start, COUNT_T freq_end);
   bool need_retune_(COUNT_T n);
   void parse_tuning_ranges_(const std::string &tuning_ranges);
-  void next_retune_(TIME_T host_now);
+  bool next_retune_(TIME_T host_now);
 
   std::string describe_ranges_();
   TIME_T apply_rx_time_slew_(TIME_T rx_time);
   COUNT_T samp_rate_, tune_jitter_hz_, freq_start_, freq_end_, tune_step_hz_,
       tune_step_fft_, skip_tune_step_fft_, skip_fft_count_, tuning_range_,
       last_tuning_range_, tuning_range_step_, fft_count_, pending_retune_,
-      total_tune_count_, slew_samples_;
+      total_tune_count_, slew_samples_, total_sweep_count_;
   bool tag_now_, low_power_hold_down_, slew_rx_time_, stare_mode_,
       in_hold_down_, reset_tags_;
   FREQ_T tune_freq_, last_rx_freq_;
