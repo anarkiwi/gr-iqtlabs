@@ -104,5 +104,7 @@ outputs:
     vlen: ${ nfft }
   - label: tune
     domain: message
+  - label: antenna
+    domain: message
 
 file_format: 1
