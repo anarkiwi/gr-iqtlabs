@@ -217,6 +217,7 @@ private:
   FREQ_T last_freq;
   gr_complex last_sample;
   bool tag_now;
+  COUNT_T total_sweep_count_;
 
 public:
   tuneable_test_source_impl(double freq, double freq_divisor);

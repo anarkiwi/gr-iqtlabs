@@ -249,8 +249,7 @@ private:
   double gain_;
   bool sigmf_, zstd_, rotate_;
   FREQ_T last_rx_freq_;
-  TIME_T last_rx_time_;
-  TIME_T open_time_;
+  TIME_T last_rx_time_, open_time_;
 
   std::queue<inference_item_type> inference_q_;
   std::queue<capture_item_type> capture_q_;

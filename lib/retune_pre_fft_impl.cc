@@ -252,7 +252,7 @@ retune_pre_fft_impl::~retune_pre_fft_impl() {}
 
 void retune_pre_fft_impl::add_output_tags_(TIME_T rx_time, FREQ_T rx_freq,
                                            COUNT_T rel) {
-  OUTPUT_TAGS(apply_rx_time_slew_(rx_time), rx_freq, 0,
+  OUTPUT_TAGS(apply_rx_time_slew_(rx_time), rx_freq, total_sweep_count_, 0,
               (rel / fft_batch_size_));
 }
 

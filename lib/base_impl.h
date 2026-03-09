@@ -223,6 +223,7 @@ const pmt::pmt_t ANTENNA_KEY = pmt::mp("antenna");
 
 const pmt::pmt_t RX_TIME_KEY = pmt::string_to_symbol("rx_time");
 const pmt::pmt_t RX_FREQ_KEY = pmt::string_to_symbol("rx_freq");
+const pmt::pmt_t RX_SWEEP_KEY = pmt::string_to_symbol("rx_sweep");
 const pmt::pmt_t INFERENCE_KEY = pmt::mp("inference");
 
 typedef sigmf::SigMF<
@@ -231,7 +232,7 @@ typedef sigmf::SigMF<
     sigmf::Annotation<sigmf::core::DescrT>>
     sigmf_record_t;
 
-#define OUTPUT_TAGS(rx_time, rx_freq, stream, offset)                          \
+#define OUTPUT_TAGS(rx_time, rx_freq, rx_sweep, stream, offset)                \
   {                                                                            \
     std::stringstream str;                                                     \
     str << name() << unique_id();                                              \
@@ -240,13 +241,16 @@ typedef sigmf::SigMF<
                        make_rx_time_key_(rx_time), _id);                       \
     this->add_item_tag(stream, nitems_written(stream) + offset, RX_FREQ_KEY,   \
                        pmt::from_double((double)rx_freq), _id);                \
+    this->add_item_tag(stream, nitems_written(stream) + offset, RX_SWEEP_KEY,  \
+                       pmt::from_uint64(rx_sweep), _id);                       \
   }
 
 #define FIND_TAGS                                                              \
   std::vector<tag_t> all_tags, rx_freq_tags;                                   \
   std::vector<TIME_T> rx_times;                                                \
+  std::vector<COUNT_T> rx_sweeps;                                              \
   get_tags_in_window(all_tags, 0, 0, in_count);                                \
-  get_tags(tag_, all_tags, rx_freq_tags, rx_times);
+  get_tags(tag_, all_tags, rx_freq_tags, rx_times, rx_sweeps);
 
 #define PROCESS_TAGS(X, ...)                                                   \
   FIND_TAGS                                                                    \
@@ -255,11 +259,13 @@ typedef sigmf::SigMF<
     const auto &tag = rx_freq_tags[t];                                         \
     auto rel = tag.offset - in_first;                                          \
     const TIME_T rx_time = rx_times[t];                                        \
+    const COUNT_T rx_sweep = rx_sweeps[t];                                     \
     const FREQ_T rx_freq = GET_FREQ(tag);                                      \
-    d_logger->debug("new rx_freq tag: {}", rx_freq);                           \
+    d_logger->debug("new rx_freq tag {} at sweep {}", rx_freq, rx_sweep);      \
     process_items_(rel, consumed, __VA_ARGS__);                                \
     {X} last_rx_freq_ = rx_freq;                                               \
     last_rx_time_ = rx_time;                                                   \
+    last_rx_sweep_ = rx_sweep;                                                 \
     in_first += rel;                                                           \
   }                                                                            \
   if (consumed < in_count) {                                                   \
@@ -286,8 +292,8 @@ public:
                               double gain, const std::string &description,
                               double frequency);
   void get_tags(const pmt::pmt_t want_tag, const std::vector<tag_t> &all_tags,
-                std::vector<tag_t> &rx_freq_tags,
-                std::vector<TIME_T> &rx_times);
+                std::vector<tag_t> &rx_freq_tags, std::vector<TIME_T> &rx_times,
+                std::vector<COUNT_T> &rx_sweeps);
   pmt::pmt_t tune_rx_msg(COUNT_T tune_freq, bool tag_now);
   pmt::pmt_t ant_msg(const std::string &antenna);
   pmt::pmt_t string_to_pmt(const std::string &s);
@@ -296,6 +302,7 @@ public:
                     const std::string &model_names);
   bool all_zeros_(const block_type *in, size_t n);
   boost::scoped_ptr<uint16_t> in_max_pos_;
+  COUNT_T last_rx_sweep_;
   base_impl();
 };
 } /* namespace iqtlabs */

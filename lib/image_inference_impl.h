@@ -234,6 +234,7 @@ typedef struct output_item {
   double points_max;
   COUNT_T start_item;
   COUNT_T serial;
+  COUNT_T rx_sweep;
 } output_item_type;
 
 class image_inference_impl : public image_inference, base_impl {

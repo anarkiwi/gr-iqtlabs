@@ -222,7 +222,7 @@ tuneable_test_source_impl::tuneable_test_source_impl(double freq,
                                             1 /*max outputs */,
                                             sizeof(output_type))),
       d_freq_divisor(freq_divisor), last_freq(freq),
-      last_sample(gr_complex(0, 0)), tag_now(false) {
+      last_sample(gr_complex(0, 0)), tag_now(false), total_sweep_count_(0) {
   last_sample =
       gr_complex(last_freq / d_freq_divisor, last_freq / d_freq_divisor);
   message_port_register_in(CMD_KEY);
@@ -263,7 +263,7 @@ int tuneable_test_source_impl::work(int noutput_items,
                                     gr_vector_void_star &output_items) {
   auto out = static_cast<output_type *>(output_items[0]);
   if (tag_now) {
-    OUTPUT_TAGS(host_now_(), last_freq, 0, 0);
+    OUTPUT_TAGS(host_now_(), last_freq, total_sweep_count_, 0, 0);
     last_sample =
         gr_complex(last_freq / d_freq_divisor, last_freq / d_freq_divisor);
     tag_now = false;

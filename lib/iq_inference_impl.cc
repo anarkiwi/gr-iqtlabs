@@ -310,6 +310,7 @@ void iq_inference_impl::run_inference_(torchserve_client *client) {
   while (inference_q_.pop(output_item)) {
     nlohmann::json metadata_json;
     metadata_json["ts"] = host_now_str_(output_item.rx_time);
+    metadata_json["rx_sweep"] = output_item.rx_sweep;
     metadata_json["sample_clock"] = std::to_string(output_item.sample_clock);
     metadata_json["sample_count"] = std::to_string(output_item.sample_count);
     metadata_json["rx_freq"] = std::to_string(output_item.rx_freq);
@@ -438,6 +439,7 @@ void iq_inference_impl::process_items_(COUNT_T power_in_count,
     // where at least one sample exceeded the minimum. We could
     // potentially select more samples either side for example.
     output_item_type output_item;
+    output_item.rx_sweep = last_rx_sweep_;
     output_item.rx_time =
         last_rx_time_ + (samples_since_tag_ / TIME_T(samp_rate_));
     output_item.sample_clock = sample_clock_;

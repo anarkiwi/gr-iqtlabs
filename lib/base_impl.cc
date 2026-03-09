@@ -216,6 +216,7 @@ namespace iqtlabs {
 base_impl::base_impl() {
   unsigned int alignment = volk_get_alignment();
   in_max_pos_.reset((uint16_t *)volk_malloc(sizeof(uint16_t), alignment));
+  last_rx_sweep_ = 0;
 }
 
 std::string base_impl::get_prefix_file_(const std::string &file,
@@ -301,23 +302,24 @@ sigmf_record_t base_impl::create_sigmf(const std::string &source_file,
 void base_impl::get_tags(const pmt::pmt_t want_tag,
                          const std::vector<tag_t> &all_tags,
                          std::vector<tag_t> &rx_freq_tags,
-                         std::vector<TIME_T> &rx_times) {
+                         std::vector<TIME_T> &rx_times,
+                         std::vector<COUNT_T> &rx_sweeps) {
   for (COUNT_T t = 0; t < all_tags.size(); ++t) {
     const auto &tag = all_tags[t];
     if (tag.key == want_tag) {
       rx_freq_tags.push_back(tag);
-      continue;
-    }
-    if (tag.key == RX_TIME_KEY) {
+    } else if (tag.key == RX_TIME_KEY) {
       rx_times.push_back(rx_time_from_tag_(tag));
-      continue;
+    } else if (tag.key == RX_SWEEP_KEY) {
+      rx_sweeps.push_back(pmt::to_uint64(tag.value));
     }
   }
 
   if (rx_freq_tags.size() != rx_times.size()) {
     rx_times.clear();
+    TIME_T now = host_now_();
     for (COUNT_T t = 0; t < rx_freq_tags.size(); ++t) {
-      rx_times.push_back(host_now_());
+      rx_times.push_back(now);
     }
   }
 }
