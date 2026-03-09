@@ -237,6 +237,7 @@ typedef struct output_item {
   float max_pwr;
   float stddev_pwr;
   FREQ_T max_pwr_rx_freq;
+  COUNT_T rx_sweep;
 } output_item_type;
 
 class iq_inference_impl : public iq_inference, base_impl {

@@ -358,7 +358,8 @@ void retune_fft_impl::sum_items_(const input_type *in) {
 
 void retune_fft_impl::add_output_tags_(TIME_T rx_time, FREQ_T rx_freq,
                                        COUNT_T rel) {
-  OUTPUT_TAGS(apply_rx_time_slew_(rx_time), rx_freq, 0, rel);
+  OUTPUT_TAGS(apply_rx_time_slew_(rx_time), rx_freq, total_sweep_count_, 0,
+              rel);
 }
 
 void retune_fft_impl::process_items_(COUNT_T c, COUNT_T &consumed,

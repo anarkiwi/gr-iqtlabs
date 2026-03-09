@@ -222,10 +222,10 @@ retuner_impl::retuner_impl(COUNT_T samp_rate, COUNT_T tune_jitter_hz,
       skip_fft_count_(skip_tune_step_fft), tuning_range_(0),
       last_tuning_range_(0), tuning_range_step_(0), fft_count_(0),
       pending_retune_(0), total_tune_count_(0), slew_samples_(0),
-      tag_now_(tag_now), low_power_hold_down_(low_power_hold_down),
-      slew_rx_time_(slew_rx_time), in_hold_down_(false), reset_tags_(false),
-      tune_freq_(0), last_rx_freq_(0), last_rx_time_(0), last_sweep_start_(0),
-      total_sweep_count_(0) {
+      total_sweep_count_(0), tag_now_(tag_now),
+      low_power_hold_down_(low_power_hold_down), slew_rx_time_(slew_rx_time),
+      in_hold_down_(false), reset_tags_(false), tune_freq_(0), last_rx_freq_(0),
+      last_rx_time_(0), last_sweep_start_(0) {
   std::random_device rand_dev;
   // cppcheck-suppress useInitializationList
   rand_gen_ = std::mt19937(rand_dev());
@@ -335,7 +335,8 @@ bool retuner_impl::next_retune_(TIME_T host_now) {
   last_tuning_range_ = tuning_range_;
   if (stare_mode_) {
     last_sweep_start_ = host_now;
-    return sweep_reset;
+    ++total_sweep_count_;
+    return true;
   }
   COUNT_T range_steps = tuning_ranges_[tuning_range_].steps;
   tune_freq_ += tune_step_hz_;

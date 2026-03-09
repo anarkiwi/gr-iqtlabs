@@ -363,6 +363,7 @@ void image_inference_impl::create_image_(bool discard) {
       volk_min_max_mean(*points_buffer_, points_min, points_max, points_mean);
       if (points_max > min_peak_points_ && last_rx_freq_) {
         output_item_type output_item;
+        output_item.rx_sweep = last_rx_sweep_;
         output_item.rx_freq = last_rx_freq_;
         output_item.ts = last_rx_time_;
         output_item.start_item = last_image_start_item_;
@@ -521,6 +522,7 @@ void image_inference_impl::run_inference_() {
     metadata_json["rssi_mean"] = std::to_string(output_item.points_mean);
     metadata_json["rssi_min"] = std::to_string(output_item.points_min);
     metadata_json["ts"] = host_now_str_(output_item.ts);
+    metadata_json["rx_sweep"] = std::to_string(output_item.rx_sweep);
     metadata_json["rx_freq"] = std::to_string(output_item.rx_freq);
     metadata_json["start_item"] = std::to_string(output_item.start_item);
     // TODO: may not be accurate due to zero suppression in retune_fft.
