@@ -322,6 +322,13 @@ void base_impl::get_tags(const pmt::pmt_t want_tag,
       rx_times.push_back(now);
     }
   }
+
+  if (rx_freq_tags.size() != rx_sweeps.size()) {
+    rx_sweeps.clear();
+    for (COUNT_T t = 0; t < rx_freq_tags.size(); ++t) {
+      rx_sweeps.push_back(0);
+    }
+  }
 }
 
 pmt::pmt_t base_impl::tune_rx_msg(FREQ_T tune_freq, bool tag_now) {
